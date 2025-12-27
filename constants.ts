@@ -1,18 +1,10 @@
 
 import { PostFormat, WeeklyConfig, ThemeType } from './types';
 
-export const BRAZILIAN_HOLIDAYS = [
-  { date: '01-01', name: 'Confraternização Universal' },
-  { date: '04-21', name: 'Tiradentes' },
-  { date: '05-01', name: 'Dia do Trabalho' },
-  { date: '09-07', name: 'Independência' },
-  { date: '10-12', name: 'Nsa. Sra. Aparecida' },
-  { date: '11-02', name: 'Finados' },
-  { date: '11-15', name: 'Proclamação da República' },
-  { date: '12-25', name: 'Natal' }
-];
+// Moved BRAZILIAN_HOLIDAYS to utils.ts to facilitate helper functions
 
 export const INITIAL_WEEKLY_CONFIG: WeeklyConfig = {
+  // Use defaultFormat to match the updated WeeklyConfig type
   0: { active: false, defaultFormat: PostFormat.STORIES },
   1: { active: true, defaultFormat: PostFormat.POST },
   2: { active: true, defaultFormat: PostFormat.REELS },
@@ -35,7 +27,8 @@ export interface ThemePalette {
 }
 
 export const THEMES: Record<ThemeType, ThemePalette> = {
-  [ThemeType.DEFAULT]: {
+  // Use correct enum values LIGHT, DARK, GOLD
+  [ThemeType.LIGHT]: {
     bg: 'bg-slate-50',
     header: 'bg-blue-600',
     primary: 'bg-blue-600',
@@ -57,7 +50,7 @@ export const THEMES: Record<ThemeType, ThemePalette> = {
     textMuted: 'text-slate-400',
     border: 'border-slate-700'
   },
-  [ThemeType.CREATIVE]: {
+  [ThemeType.GOLD]: {
     bg: 'bg-emerald-50',
     header: 'bg-emerald-600',
     primary: 'bg-emerald-600',

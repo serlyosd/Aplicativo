@@ -1,43 +1,46 @@
 
 export enum PostFormat {
-  REELS = 'Reels',
-  STORIES = 'Stories',
-  POST = 'Post'
+  REELS = 'REELS',
+  STORIES = 'STORIES',
+  POST = 'POST'
 }
 
 export enum PostStatus {
-  RASCUNHO = 'Rascunho',
-  PLANEJADO = 'Planejado',
-  PUBLICADO = 'Publicado',
-  ADIADO = 'Adiado'
+  PLANEJADO = 'PLANEJADO',
+  PRODUCAO = 'PRODUCAO',
+  CONCLUIDO = 'CONCLUIDO',
+  POSTADO = 'POSTADO'
 }
 
 export enum ThemeType {
-  DEFAULT = 'default',
+  LIGHT = 'light',
   DARK = 'dark',
-  CREATIVE = 'creative'
+  GOLD = 'gold'
 }
 
 export interface Post {
   id: string;
-  date: string; // YYYY-MM-DD
+  date: string;
   title: string;
   format: PostFormat;
   status: PostStatus;
-  responsible?: string;
+  responsible: string;
+  note: string;
+  // Added optional fields to satisfy PostModal and App usages
   summary?: string;
   link?: string;
 }
 
 export interface WeeklyConfig {
-  [key: number]: { // 0 (Sun) to 6 (Sat)
+  [key: number]: {
     active: boolean;
+    // Renamed to defaultFormat to match Patterns component and avoid conflicts
     defaultFormat: PostFormat;
   };
 }
 
-export interface AppState {
+export interface AppData {
   posts: Post[];
-  weeklyConfig: WeeklyConfig;
-  currentTheme: ThemeType;
+  config: WeeklyConfig;
+  theme: ThemeType;
 }

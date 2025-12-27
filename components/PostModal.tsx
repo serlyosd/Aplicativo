@@ -26,82 +26,133 @@ const PostModal: React.FC<PostModalProps> = ({ post, initialDate, onSave, onDele
   });
 
   useEffect(() => {
-    if (post) setFormData(post);
+    if (post) {
+      setFormData({ ...post, id: String(post.id) });
+    }
   }, [post]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!formData.title) {
+    if (!formData.title.trim()) {
       alert("Defina um título para a postagem.");
       return;
     }
     onSave(formData);
   };
 
-  const handleActionDelete = (e: React.MouseEvent) => {
+  const handleManualDelete = (e: React.MouseEvent) => {
+    // Garantimos que nenhum outro evento ocorra
     e.preventDefault();
     e.stopPropagation();
+
     if (post && post.id) {
-      if (window.confirm('Tem certeza que deseja apagar permanentemente?')) {
-        console.log("[Modal] Solicitando exclusão do ID:", post.id);
-        onDelete(String(post.id));
+      const targetId = String(post.id);
+      if (window.confirm("Atenção: Esta postagem será apagada permanentemente da sua biblioteca. Confirmar exclusão?")) {
+        console.log("[Modal] Enviando ordem de exclusão para o App. ID:", targetId);
+        onDelete(targetId);
       }
     }
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50 p-4 backdrop-blur-md">
-      <div className={`${theme.card} rounded-2xl shadow-2xl w-full max-w-lg border ${theme.border} overflow-hidden flex flex-col max-h-[90vh]`}>
-        <div className={`${theme.header} text-white p-5 flex justify-between items-center`}>
-          <h2 className="text-xl font-bold uppercase tracking-tight">{post ? 'Editar Postagem' : 'Novo Post'}</h2>
-          <button onClick={onClose} className="hover:rotate-90 transition-transform p-2">
+    <div className="fixed inset-0 bg-slate-900/90 flex items-center justify-center z-[100] p-4 backdrop-blur-sm animate-in fade-in duration-300">
+      <div className={`${theme.card} rounded-[2.5rem] shadow-[0_35px_60px_-15px_rgba(0,0,0,0.5)] w-full max-w-xl border ${theme.border} overflow-hidden flex flex-col transform transition-all animate-in slide-in-from-bottom-8 duration-500`}>
+        
+        {/* Header Elegante */}
+        <div className={`${theme.header} text-white p-8 flex justify-between items-center relative overflow-hidden`}>
+          <div className="relative z-10">
+            <h2 className="text-2xl font-black uppercase tracking-tighter">{post ? 'Editar Pauta' : 'Nova Pauta'}</h2>
+            <p className="text-[10px] font-bold opacity-70 uppercase tracking-[0.3em]">Editor de Conteúdo</p>
+          </div>
+          <button onClick={onClose} className="relative z-10 w-12 h-12 flex items-center justify-center bg-white/10 hover:bg-white/20 rounded-2xl transition-all hover:rotate-90">
             <i className="fa-solid fa-times text-xl"></i>
           </button>
+          <div className="absolute top-0 right-0 p-4 opacity-10">
+            <i className="fa-solid fa-pencil text-8xl -mr-8 -mt-8"></i>
+          </div>
         </div>
         
-        <form onSubmit={handleSubmit} className="p-6 space-y-4 overflow-y-auto">
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-[10px] font-black uppercase mb-1 opacity-60">Data Agendada</label>
-              <input type="date" className={`w-full p-3 border ${theme.border} rounded-xl bg-transparent outline-none focus:ring-2 focus:ring-blue-500`} value={formData.date} onChange={e => setFormData({...formData, date: e.target.value})} />
+        <div className="p-8 overflow-y-auto max-h-[60vh] custom-scrollbar">
+          <form id="pauta-form" onSubmit={handleSubmit} className="space-y-6">
+            <div className="grid grid-cols-2 gap-6">
+              <div className="space-y-2">
+                <label className="text-[10px] font-black uppercase text-slate-400 tracking-widest ml-1">Data Prevista</label>
+                <input 
+                  type="date" 
+                  className={`w-full p-4 border ${theme.border} rounded-2xl bg-slate-50 outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 transition-all font-bold`}
+                  value={formData.date} 
+                  onChange={e => setFormData({...formData, date: e.target.value})} 
+                />
+              </div>
+              <div className="space-y-2">
+                <label className="text-[10px] font-black uppercase text-slate-400 tracking-widest ml-1">Formato de Entrega</label>
+                <select 
+                  className={`w-full p-4 border ${theme.border} rounded-2xl bg-slate-50 outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 transition-all font-bold`}
+                  value={formData.format} 
+                  onChange={e => setFormData({...formData, format: e.target.value as PostFormat})}
+                >
+                  {Object.values(PostFormat).map(f => <option key={f} value={f}>{f}</option>)}
+                </select>
+              </div>
             </div>
-            <div>
-              <label className="block text-[10px] font-black uppercase mb-1 opacity-60">Tipo de Conteúdo</label>
-              <select className={`w-full p-3 border ${theme.border} rounded-xl bg-transparent outline-none focus:ring-2 focus:ring-blue-500`} value={formData.format} onChange={e => setFormData({...formData, format: e.target.value as PostFormat})}>
-                {Object.values(PostFormat).map(f => <option key={f} value={f}>{f}</option>)}
-              </select>
-            </div>
-          </div>
 
-          <div>
-            <label className="block text-[10px] font-black uppercase mb-1 opacity-60">Título / Pauta Curta</label>
-            <input type="text" placeholder="Ex: Planejamento Financeiro 2024" className={`w-full p-3 border ${theme.border} rounded-xl bg-transparent outline-none focus:ring-2 focus:ring-blue-500`} value={formData.title} onChange={e => setFormData({...formData, title: e.target.value})} />
-          </div>
-
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-[10px] font-black uppercase mb-1 opacity-60">Status Atual</label>
-              <select className={`w-full p-3 border ${theme.border} rounded-xl bg-transparent outline-none focus:ring-2 focus:ring-blue-500`} value={formData.status} onChange={e => setFormData({...formData, status: e.target.value as PostStatus})}>
-                {Object.values(PostStatus).map(s => <option key={s} value={s}>{s}</option>)}
-              </select>
+            <div className="space-y-2">
+              <label className="text-[10px] font-black uppercase text-slate-400 tracking-widest ml-1">Título da Publicação</label>
+              <input 
+                type="text" 
+                placeholder="Ex: Como economizar no mercado..." 
+                className={`w-full p-4 border ${theme.border} rounded-2xl bg-slate-50 outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 transition-all font-bold placeholder:font-normal`}
+                value={formData.title} 
+                onChange={e => setFormData({...formData, title: e.target.value})} 
+              />
             </div>
-            <div>
-              <label className="block text-[10px] font-black uppercase mb-1 opacity-60">Editor Responsável</label>
-              <input type="text" className={`w-full p-3 border ${theme.border} rounded-xl bg-transparent outline-none focus:ring-2 focus:ring-blue-500`} value={formData.responsible} onChange={e => setFormData({...formData, responsible: e.target.value})} />
-            </div>
-          </div>
 
-          <div className="pt-6 border-t flex flex-col sm:flex-row gap-3">
-            <button type="submit" className="flex-1 bg-blue-600 text-white font-black uppercase text-xs py-4 rounded-xl shadow-lg hover:bg-blue-700 active:scale-95 transition-all">
-              <i className="fa-solid fa-check mr-2"></i> Confirmar Alteração
+            <div className="grid grid-cols-2 gap-6">
+              <div className="space-y-2">
+                <label className="text-[10px] font-black uppercase text-slate-400 tracking-widest ml-1">Status da Produção</label>
+                <select 
+                  className={`w-full p-4 border ${theme.border} rounded-2xl bg-slate-50 outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 transition-all font-bold`}
+                  value={formData.status} 
+                  onChange={e => setFormData({...formData, status: e.target.value as PostStatus})}
+                >
+                  {Object.values(PostStatus).map(s => <option key={s} value={s}>{s}</option>)}
+                </select>
+              </div>
+              <div className="space-y-2">
+                <label className="text-[10px] font-black uppercase text-slate-400 tracking-widest ml-1">Editor / Responsável</label>
+                <input 
+                  type="text" 
+                  placeholder="Nome do editor"
+                  className={`w-full p-4 border ${theme.border} rounded-2xl bg-slate-50 outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 transition-all font-bold placeholder:font-normal`}
+                  value={formData.responsible} 
+                  onChange={e => setFormData({...formData, responsible: e.target.value})} 
+                />
+              </div>
+            </div>
+          </form>
+        </div>
+
+        {/* Footer Reforçado */}
+        <div className="p-8 border-t border-slate-100 bg-slate-50 flex flex-col gap-4">
+          <button 
+            type="submit" 
+            form="pauta-form" 
+            className="w-full bg-blue-600 text-white font-black uppercase text-xs py-5 rounded-2xl shadow-[0_10px_30px_-5px_rgba(37,99,235,0.4)] hover:bg-blue-700 hover:-translate-y-1 active:translate-y-0 transition-all"
+          >
+            {post ? 'Salvar Alterações' : 'Agendar Publicação'}
+          </button>
+          
+          {post && (
+            <button 
+              type="button" 
+              onClick={handleManualDelete} 
+              className="w-full group flex items-center justify-center gap-3 py-4 rounded-2xl border-2 border-rose-100 bg-white text-rose-600 font-black uppercase text-[10px] hover:bg-rose-50 hover:border-rose-200 transition-all"
+            >
+              <i className="fa-solid fa-trash-can group-hover:shake"></i>
+              Excluir Postagem Permanentemente
             </button>
-            {post && (
-              <button type="button" onClick={handleActionDelete} className="px-8 bg-red-600 text-white font-black uppercase text-xs py-4 rounded-xl shadow-lg hover:bg-red-700 active:scale-95 transition-all">
-                <i className="fa-solid fa-trash"></i>
-              </button>
-            )}
-          </div>
-        </form>
+          )}
+        </div>
       </div>
     </div>
   );
