@@ -1,21 +1,56 @@
 
+export enum ContentFormat {
+  CAROUSEL = 'Carrossel',
+  REELS = 'Reels',
+  STORY = 'Story',
+  POST = 'Post'
+}
+
+export enum SocialNetwork {
+  INSTAGRAM = 'Instagram',
+  LINKEDIN = 'LinkedIn'
+}
+
+export enum ContentStatus {
+  IDEA = 'IDEIA',
+  PRODUCTION = 'PRODUÇÃO',
+  SCHEDULED = 'AGENDADO',
+  PUBLISHED = 'PUBLICADO'
+}
+
+export interface NexusPost {
+  id: string;
+  date: string; // ISO String YYYY-MM-DD
+  title: string;
+  format: ContentFormat;
+  socialNetwork: SocialNetwork;
+  status: ContentStatus;
+  owner: string;
+  copy?: string;
+  isArchived: boolean;
+}
+
+export interface StrategyConfig {
+  [dayIndex: number]: {
+    active: boolean;
+    defaultFormat: ContentFormat;
+  };
+}
+
+// Legacy types for compatibility (Mantidos para não quebrar referências antigas se houver)
 export enum PostFormat {
   REELS = 'REELS',
   STORIES = 'STORIES',
-  POST = 'POST'
+  POST = 'POST',
+  CAROUSEL = 'CAROUSEL',
+  VIDEO = 'VIDEO'
 }
 
 export enum PostStatus {
   PLANEJADO = 'PLANEJADO',
-  PRODUCAO = 'PRODUCAO',
-  CONCLUIDO = 'CONCLUIDO',
-  POSTADO = 'POSTADO'
-}
-
-export enum ThemeType {
-  LIGHT = 'light',
-  DARK = 'dark',
-  GOLD = 'gold'
+  PRODUCAO = 'PRODUÇÃO',
+  POSTADO = 'POSTADO',
+  ADIADO = 'ADIADO'
 }
 
 export interface Post {
@@ -25,22 +60,19 @@ export interface Post {
   format: PostFormat;
   status: PostStatus;
   responsible: string;
-  note: string;
-  // Added optional fields to satisfy PostModal and App usages
-  summary?: string;
-  link?: string;
+  summary: string;
+  link: string;
 }
 
-export interface WeeklyConfig {
-  [key: number]: {
+export type WeeklyConfig = {
+  [dayIndex: number]: {
     active: boolean;
-    // Renamed to defaultFormat to match Patterns component and avoid conflicts
     defaultFormat: PostFormat;
   };
 }
 
-export interface AppData {
-  posts: Post[];
-  config: WeeklyConfig;
-  theme: ThemeType;
+export enum ThemeType {
+  LIGHT = 'LIGHT',
+  DARK = 'DARK',
+  GOLD = 'GOLD'
 }
